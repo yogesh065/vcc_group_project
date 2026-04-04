@@ -1,13 +1,13 @@
 """
-Inference for a plain sklearn estimator saved as .pkl/.joblib (e.g. RandomForest).
-Uses `xg_boost_best_model.meta.json`: `feature_names` (order) and optional `class_names_by_index`.
+Inference for sklearn-compatible estimators in .pkl/.joblib (RandomForest, XGBClassifier, etc.).
+Sidecar JSON: `feature_names` (training order) and optional `class_names_by_index` for int classes.
 """
 
 from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, List, Tuple
+from typing import Any, List, Sequence, Tuple
 
 import joblib
 import numpy as np
@@ -62,14 +62,22 @@ class SklearnPklBackend:
         return pred, proba, labels
 
 
+def _class_display_names(classes: Sequence[Any], by_idx: List[str] | None) -> List[str]:
+    """Map model.classes_ to human labels (handles int 0/1 or str BENIGN/DDoS)."""
+    out: List[str] = []
+    for c in classes:
+        if by_idx is not None and isinstance(c, (int, np.integer)):
+            out.append(by_idx[int(c)])
+        else:
+            out.append(str(c))
+    return out
+
+
 def load_pkl_backend(pkl_path: Path, meta_path: Path) -> SklearnPklBackend:
     model = joblib.load(pkl_path)
     meta = json.loads(meta_path.read_text(encoding="utf-8"))
     names = meta["feature_names"]
     classes = list(getattr(model, "classes_", []))
     by_idx: List[str] | None = meta.get("class_names_by_index")
-    if by_idx is not None:
-        display = [by_idx[int(c)] for c in classes]
-    else:
-        display = [str(c) for c in classes]
+    display = _class_display_names(classes, by_idx)
     return SklearnPklBackend(model, names, display)

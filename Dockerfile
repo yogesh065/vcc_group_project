@@ -18,6 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY ddos_pipeline.py train_model.py app.py streamlit_app.py model_loader.py pkl_backend.py ./
 COPY xg_boost_best_model.pkl xg_boost_best_model.meta.json ./
+COPY xgboost_model.pkl xgboost_model.meta.json ./
 COPY .streamlit/ /app/.streamlit/
 RUN mkdir -p /app/artifacts
 COPY artifacts/ /app/artifacts/

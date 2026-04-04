@@ -48,8 +48,8 @@ def main() -> None:
             if backend.meta:
                 st.json(backend.meta)
         else:
-            st.success("Loaded: **pickled sklearn model** (RandomForest)")
-            st.caption("Features from `xg_boost_best_model.meta.json` (Friday CSV column order).")
+            st.success("Loaded: **pickled sklearn / XGBoost model**")
+            st.caption("Features from the matching `*.meta.json` (default: `xgboost_model` or `xg_boost_best_model`).")
         st.divider()
         st.markdown("**Default training data**")
         st.code(str(DEFAULT_CSV.name), language="text")

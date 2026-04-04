@@ -49,3 +49,13 @@ docker push ACCOUNT.dkr.ecr.REGION.amazonaws.com/ddos-detection:latest
 ## 4. Optional: train on AWS
 
 For full GridSearch training, run `train_model.py` on a larger EC2 instance or SageMaker, upload `model_bundle.joblib` to S3, then bake it into the image or download at container startup via `entrypoint.sh` (not included; add if you need dynamic model fetch).
+
+## Streamlit Community Cloud
+
+Yes — the app is intended to run there: Streamlit’s servers use **Linux**, so **XGBoost loads correctly** (unlike some macOS setups without `libomp`).
+
+1. Push this repo to GitHub and open [share.streamlit.io](https://share.streamlit.io).
+2. **New app** → your repo → branch `main` → **Main file path:** `streamlit_app.py`.
+3. Root **`requirements.txt`** and **`packages.txt`** (`libgomp1`) are picked up automatically for system libraries XGBoost may need.
+
+Without `artifacts/model_bundle.joblib`, **`MODEL_BACKEND=auto`** uses **`xgboost_model.pkl`** + **`xgboost_model.meta.json`** when present (see `model_loader.py`). The first clone can be slow if the large Friday CSV is in the repo.
