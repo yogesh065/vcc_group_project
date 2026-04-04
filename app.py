@@ -54,6 +54,9 @@ def main() -> None:
         st.markdown("**Default training data**")
         st.code(str(DEFAULT_CSV.name), language="text")
         st.markdown(
+            "**Run UI**\n```bash\nstreamlit run streamlit_app.py\n```"
+        )
+        st.markdown(
             "**Train bundle (XGBoost pipeline)**\n```bash\npython train_model.py --quick\n```"
         )
         st.markdown(
