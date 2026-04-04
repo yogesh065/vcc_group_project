@@ -1,0 +1,12 @@
+# Large local CICIDS slice (train on host/CI or mount at runtime)
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+
+__pycache__
+*.pyc
+.git
+.env
+.venv
+venv
+*.ipynb
+.pytest_cache
+.DS_Store
