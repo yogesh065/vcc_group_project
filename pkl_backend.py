@@ -22,9 +22,11 @@ class SklearnPklBackend:
         model: Any,
         feature_names: List[str],
         class_display_names: List[str],
+        scaler: Any | None = None,
     ) -> None:
         self.model = model
         self.feature_names = feature_names
+        self.scaler = scaler
         n = int(getattr(model, "n_features_in_", len(feature_names)))
         if len(feature_names) != n:
             raise ValueError(
@@ -50,7 +52,10 @@ class SklearnPklBackend:
         sub.replace([np.inf, -np.inf], np.nan, inplace=True)
         med = sub.median(numeric_only=True)
         sub = sub.fillna(med).fillna(0.0)
-        return sub.to_numpy(dtype=np.float64)
+        X = sub.to_numpy(dtype=np.float64)
+        if self.scaler is not None:
+            X = self.scaler.transform(X)
+        return X
 
     def predict_all(
         self, df: pd.DataFrame
@@ -80,4 +85,12 @@ def load_pkl_backend(pkl_path: Path, meta_path: Path) -> SklearnPklBackend:
     classes = list(getattr(model, "classes_", []))
     by_idx: List[str] | None = meta.get("class_names_by_index")
     display = _class_display_names(classes, by_idx)
-    return SklearnPklBackend(model, names, display)
+    scaler = None
+    rel = meta.get("scaler_joblib")
+    if rel:
+        sp = Path(rel)
+        if not sp.is_file():
+            sp = meta_path.parent / rel
+        if sp.is_file():
+            scaler = joblib.load(sp)
+    return SklearnPklBackend(model, names, display, scaler=scaler)
