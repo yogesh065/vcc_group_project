@@ -307,9 +307,7 @@ def render_shap_explanation(backend, kind: str, X_proc: pd.DataFrame, n_samples:
 
     except ImportError:
         st.warning(
-            "⚠️ `shap` is not installed. Run `pip install shap` to enable model interpretability.
-
-"
+            "⚠️ `shap` is not installed. Run `pip install shap` to enable model interpretability."
             "SHAP (SHapley Additive exPlanations) shows how each feature contributes to "
             "the model's prediction for individual flows."
         )
