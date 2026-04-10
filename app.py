@@ -154,7 +154,11 @@ def render_shap(backend, kind: str, X_proc, n_samples: int = 5) -> None:
     try:
         import shap  # noqa: PLC0415
 
-        clf = backend.classifier if kind == "bundle" else backend.model
+        clf = (
+            backend.classifier
+            if hasattr(backend, "classifier")
+            else getattr(backend, "model", backend)
+        )
         sample = X_proc.iloc[:n_samples] if hasattr(X_proc, "iloc") else X_proc[:n_samples]
         explainer = shap.TreeExplainer(clf)
         shap_values = explainer(sample)
@@ -306,16 +310,19 @@ def main() -> None:
                     y_true = df[LABEL_COL] if LABEL_COL in df.columns else None
 
                     with st.spinner("Running inference…"):
-                        if kind == "bundle":
-                            assert isinstance(backend, ModelBundle)
+                        if kind == "bundle" and hasattr(backend, "classifier"):
                             X_proc = preprocess_for_predict(df, backend)
                             pred = backend.classifier.predict(X_proc)
                             proba = backend.classifier.predict_proba(X_proc)
                             out_labels = backend.label_encoder.inverse_transform(pred)
-                        else:
-                            assert isinstance(backend, SklearnPklBackend)
+                        elif hasattr(backend, "predict_all"):
                             pred, proba, out_labels = backend.predict_all(df)
                             X_proc = df
+                        else:
+                            raise RuntimeError(
+                                f"Backend type '{type(backend).__name__}' is not supported. "
+                                "Expected a ModelBundle or SklearnPklBackend."
+                            )
 
                     out = df.copy()
                     out["predicted_label"] = out_labels
