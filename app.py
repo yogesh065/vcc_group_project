@@ -249,7 +249,7 @@ def main() -> None:
         "<span style='font-size:36px;'>🛡️</span>"
         "<div>"
         "<div style='font-size:26px;font-weight:800;color:#ffffff;letter-spacing:-0.5px;'>"
-        "DDoS Traffic Detection</div>"
+        "Cloud Shield AI: A Distributed, AI-Powered Framework for Proactive DDoS Detection and Cloud-Scale Threat Intelligence</div>"
         "<div style='font-size:13px;color:#8892b0;margin-top:2px;'>"
         "CICIDS-2017 &nbsp;·&nbsp; XGBoost &nbsp;·&nbsp; SHAP Interpretability</div>"
         "</div></div>"
